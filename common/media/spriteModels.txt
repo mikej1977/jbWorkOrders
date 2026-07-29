@@ -1,0 +1,276 @@
+spriteModel
+{
+    VERSION = 1,
+
+    tileset
+    {
+        name = jb_workorders,
+
+        /* Log storage: sprites jb_workorders_0..7 (16-col sheet -> row 0).
+           4..7 = default-facing fill L1..L4, 0..3 = north-facing fill L1..L4.
+           translate/rotate/scale are calibration values -- tune in-game. */
+
+        tile
+        {
+            xy = 4 0,
+            modelScript = jbWorkOrders.WOLogPile1,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 5 0,
+            modelScript = jbWorkOrders.WOLogPile2,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 6 0,
+            modelScript = jbWorkOrders.WOLogPile3,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 7 0,
+            modelScript = jbWorkOrders.WOLogPile4,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+
+        tile
+        {
+            xy = 0 0,
+            modelScript = jbWorkOrders.WOLogPile1,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 1 0,
+            modelScript = jbWorkOrders.WOLogPile2,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 2 0,
+            modelScript = jbWorkOrders.WOLogPile3,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 3 0,
+            modelScript = jbWorkOrders.WOLogPile4,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+
+        /* Plank storage: default-facing fill L1..L4 = jb_workorders_12..15 (xy 12..15). */
+        tile
+        {
+            xy = 12 0,
+            modelScript = jbWorkOrders.WOPlankPile1,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 13 0,
+            modelScript = jbWorkOrders.WOPlankPile2,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 14 0,
+            modelScript = jbWorkOrders.WOPlankPile3,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 15 0,
+            modelScript = jbWorkOrders.WOPlankPile4,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+
+        /* Plank storage: north-facing fill L1..L4 = jb_workorders_8..11 (xy 8..11). */
+        tile
+        {
+            xy = 8 0,
+            modelScript = jbWorkOrders.WOPlankPile1,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 9 0,
+            modelScript = jbWorkOrders.WOPlankPile2,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 10 0,
+            modelScript = jbWorkOrders.WOPlankPile3,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 11 0,
+            modelScript = jbWorkOrders.WOPlankPile4,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+
+        /* Twig/branch storage: fill L1..L4 = jb_workorders_16..19 (xy 0..3 row 1).
+           Twigs have no separate north facing (same sprites both ways). */
+        tile
+        {
+            xy = 16 0,
+            modelScript = jbWorkOrders.WOTwigPile1,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 17 0,
+            modelScript = jbWorkOrders.WOTwigPile2,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 18 0,
+            modelScript = jbWorkOrders.WOTwigPile3,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 19 0,
+            modelScript = jbWorkOrders.WOTwigPile4,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+
+        /* Firewood storage: default fill L1..L4 = jb_workorders_28..31 (xy 12..15 row 1). */
+        tile
+        {
+            xy = 28 0,
+            modelScript = jbWorkOrders.WOFirewoodPile1,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 29 0,
+            modelScript = jbWorkOrders.WOFirewoodPile2,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 30 0,
+            modelScript = jbWorkOrders.WOFirewoodPile3,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 31 0,
+            modelScript = jbWorkOrders.WOFirewoodPile4,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+
+        /* Firewood storage: north fill L1..L4 = jb_workorders_24..27 (xy 8..11 row 1). */
+        tile
+        {
+            xy = 24 0,
+            modelScript = jbWorkOrders.WOFirewoodPile1,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 25 0,
+            modelScript = jbWorkOrders.WOFirewoodPile2,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 26 0,
+            modelScript = jbWorkOrders.WOFirewoodPile3,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 27 0,
+            modelScript = jbWorkOrders.WOFirewoodPile4,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 180.0000 0.0000,
+            scale = 1.0000,
+        }
+
+        /* Stone storage: sprite 21 (fill L1&L2), 22 (L3), 23 (L4). No separate facing. */
+        tile
+        {
+            xy = 21 0,
+            modelScript = jbWorkOrders.WOStonePile1,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 22 0,
+            modelScript = jbWorkOrders.WOStonePile2,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+        tile
+        {
+            xy = 23 0,
+            modelScript = jbWorkOrders.WOStonePile3,
+            translate = 0.0000 0.0000 0.1000,
+            rotate = 0.0000 90.0000 0.0000,
+            scale = 1.0000,
+        }
+    }
+}
