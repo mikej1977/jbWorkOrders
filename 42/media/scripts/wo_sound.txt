@@ -1,0 +1,8 @@
+module Base
+{
+    sound WO_ChopTreeRepeat
+    {
+        category = ChopTree, loop = true, is3D = true,
+        clip { file = media/sound/treechop.ogg, distanceMax = 8, volume = 4, }
+    }
+}
