@@ -1,0 +1,10 @@
+name=JB Work Orders
+id=JB_WorkOrders
+minVersion=42
+modversion=1.3
+description=Queue up work orders to automatically chop trees, gather logs, saw planks, clear land, manage storage and more
+poster=poster.png
+icon=icon.png
+author=jimbeamdiablo
+pack=jb_workorders
+tiledef=jb_workorders 1635

@@ -1,0 +1,13 @@
+module Base {
+
+    timedAction WOChopLogs
+    {
+        metabolics         = MediumWork,
+        actionAnim         = WOBW_ChopLogs,
+        sound              = WO_ChopTreeRepeat,
+        muscleStrainFactor = 0.0133,
+        muscleStrainSkill  = Strength,
+        muscleStrainParts  = Hand_R;ForeArm_R;UpperArm_R,
+    }
+
+}

@@ -1,0 +1,7 @@
+{
+    "Sandbox_JBWorkOrders": "JB Work Orders",
+    "Sandbox_JBWorkOrders_WorkEnduranceReduction": "Work Endurance Reduction (percent)",
+    "Sandbox_JBWorkOrders_WorkEnduranceReduction_tooltip": "Give back this percent of endurance that Work Orders labor costs. 0 = vanilla, 100 = no endurance loss from Work Orders.",
+    "Sandbox_JBWorkOrders_RestAtEnduranceLevel": "Rest At Endurance Moodle Level",
+    "Sandbox_JBWorkOrders_RestAtEnduranceLevel_tooltip": "During Work Orders labor, auto-rest until endurance is full once the endurance moodle reaches this level (1-4). 0 = never rest."
+}

@@ -1,0 +1,21 @@
+module Base
+{
+
+    craftRecipe WO_ChopLog
+    {
+        timedAction = WOChopLogs,
+        time = 60,
+        Tags = InHandCraft;CanBeDoneFromFloor,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.Log;Base.LargeBranch],
+            item 1 [Base.WoodAxe;Base.WoodAxeForged;Base.Axe;Base.Axe_Old;Base.Axe_Sawblade;Base.Axe_ScrapCleaver;Base.StoneAxeLarge] mode:keep flags[IsNotDull;MayDegradeLight;Prop2],
+        }
+        outputs
+        {
+            item 6 Base.Firewood,
+            item 1 Base.Splinters,
+        }
+    },
+}
