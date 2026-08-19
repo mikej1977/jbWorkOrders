@@ -8,6 +8,10 @@ generic Lua advice.
 ## 0. Hard rules
 
 These are not preferences. Breaking one is an automatic push denial.
+
+*Jim doesn't care if you use AI as a code assistant*, but you should know what
+you are writing and understand how it works.
+
 See the bottom of this MD for a checklist.
 
 ### `pcall` is banned
