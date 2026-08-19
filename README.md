@@ -1,4 +1,4 @@
-# JB Work Orders — Code Style Guide
+# JB Work Orders - Code Style Guide
 
 How this mod is written. Match it. Derived from the mind of Jim, not
 generic Lua advice.
@@ -23,7 +23,7 @@ Why:
 
 - It hides the stack trace. "It kinda works now" is worse than a crash. A crash gets reported and fixed.
 
-What to do instead — all three already used everywhere in this codebase:
+What to do instead - all three already used everywhere in this codebase:
 
 ```lua
 -- 1. guard the precondition, bail early
@@ -87,7 +87,7 @@ media/lua/
 
 ### Identifiers
 
-Whole words. No abbreviations, no single letters — including loop counters.
+Whole words. No abbreviations, no single letters - including loop counters.
 
 ```lua
 for objectIndex = 0, square:getObjects():size() - 1 do
@@ -138,7 +138,7 @@ function ClaimedSquares.claim(square, playerNum) ... end
 return ClaimedSquares
 ```
 
-Globals only when the engine demands one — timed actions, building cursors, and the
+Globals only when the engine demands one - timed actions, building cursors, and the
 `WorkOrders` namespace. Any file touching the namespace opens with:
 
 ```lua
@@ -191,7 +191,7 @@ for itemIndex = 0, items:size() - 1 do
     local item = items:get(itemIndex)
 ```
 
-**Copy a Java list into a Lua table before mutating its owner** — otherwise the iteration
+**Copy a Java list into a Lua table before mutating its owner** - otherwise the iteration
 shifts under you:
 
 ```lua
@@ -210,7 +210,7 @@ for _, item in ipairs(items) do
 **ModData keys are namespaced.** `WO_AutoLogStorage`, `WorkOrders_HUDPos`,
 `WorkOrders_WindowRect`. Never a bare key.
 
-**Timed actions follow one shape** — `isValid`, `start`, `update`, `perform`, `complete`,
+**Timed actions follow one shape** - `isValid`, `start`, `update`, `perform`, `complete`,
 `getDuration`, `new` last:
 
 ```lua
@@ -351,7 +351,7 @@ API.addMenuOption({
 
 `action` is `{ selectUtilName, logicName, ...params }`. Both names are **strings resolved
 late** through `resolveLogic`; a param string matching a flag key gets substituted with
-that flag's value. Availability lives in `condition(playerInv, flags)` — cheap and pure,
+that flag's value. Availability lives in `condition(playerInv, flags)` - cheap and pure,
 it runs on every window rebuild.
 
 Public API functions carry EmmyLua annotations. Internals don't need them.
@@ -397,7 +397,7 @@ local function debugLog(message) if WOFarmDebug then print("[WOFarm] " .. messag
   end
   ```
   MP-locked sliders render disabled rather than disappearing.
-- Player identity: `WorkOrders.playerKey()` — `getOnlineID()` in MP, `getPlayerNum()` in SP.
+- Player identity: `WorkOrders.playerKey()` - `getOnlineID()` in MP, `getPlayerNum()` in SP.
 - Transmit after mutating world state: `transmitModData`, `transmitRemoveItemFromSquare`,
   `transmitUpdatedSpriteToServer` (client) / `transmitUpdatedSpriteToClients` +
   `sendObjectChange` (server), `sendAddItemToContainer`, `sendRemoveItemFromContainer`.
@@ -458,7 +458,7 @@ Known-jank markers are load-bearing documentation. Leave them:
 -- so args[2] is usually the work square, but sometimes it's a world object(because I'm lazy)
 ```
 
-Module-top contract blocks are the one place for structured comments — see the callback
+Module-top contract blocks are the one place for structured comments - see the callback
 shapes at the top of `wo_SelectUtils.lua` and the runner docs in `wo_API.lua`.
 
 Typos in existing comments are not bugs. Don't fix them as drive-by changes.
