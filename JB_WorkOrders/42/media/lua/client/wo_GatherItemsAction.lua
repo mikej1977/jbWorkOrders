@@ -316,6 +316,7 @@ function WO_GatherItemsAction:DropOffItems()
     local actionsQueued = 0
     local BATCH_LIMIT = 20
     local scheduledSquare = self.character:getSquare()
+    local unreachable = {} -- cant path to these this batch, quit probing them for every damn item
 
     local projectedWeights = {}
     for _, destination in ipairs(destinations) do
@@ -344,50 +345,63 @@ function WO_GatherItemsAction:DropOffItems()
                             targetVehiclePart = actualContainer
                         end
 
-                        if actualContainer:getCapacity() >= (projectedWeights[actualContainer] + itemWeight) then
-                            projectedWeights[actualContainer] = projectedWeights[actualContainer] + itemWeight
-
+                        if not unreachable[actualContainer]
+                            and actualContainer:getCapacity() >= (projectedWeights[actualContainer] + itemWeight) then
                             local containerObj = actualContainer:getParent()
                             local destSquare = containerObj and containerObj:getSquare() or self.dropSquare
-
-                            self.dropSquare = destSquare
+                            local canGetThere = true
 
                             if scheduledSquare ~= destSquare then
                                 if targetVehiclePart then
+                                    -- false here is "pathfind queued, come back next tick bruh"
+                                    -- failure is not an option
                                     if not walkToVehiclePartArea(self.character, targetVehiclePart) then return end
                                 else
-                                    if not luautils.walkAdj(self.character, self.dropSquare, false) then return end
+                                    -- crate boxed in by its own neighbors? blacklist it and try the next one.
+                                    -- bailing here fucks the whole job: walkAdj wipes the queue before it
+                                    -- fails, so we'd come back every tick, clear, fail, and queue shit
+                                    canGetThere = luautils.walkAdj(self.character, destSquare, true)
+                                    if not canGetThere then unreachable[actualContainer] = true end
                                 end
-                                scheduledSquare = destSquare
+                                if canGetThere then scheduledSquare = destSquare end
                             end
 
-                            ISTimedActionQueue.add(ISInventoryTransferAction:new(self.character, dropItem,
-                                dropItem:getContainer(), actualContainer, 50))
+                            if canGetThere then
+                                projectedWeights[actualContainer] = projectedWeights[actualContainer] + itemWeight
 
-                            if containerObj and containerObj:getModData() and containerObj:getModData().WO_AutoLogStorage then
-                                local updateAction = ISBaseTimedAction:new(self.character)
-                                updateAction.Type = "UpdateStorageSprite"
-                                updateAction.maxTime = 1
-                                updateAction.isValid = function(self) return true end
+                                ISTimedActionQueue.add(ISInventoryTransferAction:new(self.character, dropItem,
+                                    dropItem:getContainer(), actualContainer, 50))
 
-                                updateAction.perform = function(self)
-                                    StorageLogic.UpdateSprite(containerObj)
-                                    ISBaseTimedAction.perform(self)
+                                if containerObj and containerObj:getModData() and containerObj:getModData().WO_AutoLogStorage then
+                                    local updateAction = ISBaseTimedAction:new(self.character)
+                                    updateAction.Type = "UpdateStorageSprite"
+                                    updateAction.maxTime = 1
+                                    updateAction.isValid = function(self) return true end
+
+                                    updateAction.perform = function(self)
+                                        StorageLogic.UpdateSprite(containerObj)
+                                        ISBaseTimedAction.perform(self)
+                                    end
+                                    ISTimedActionQueue.add(updateAction)
                                 end
-                                ISTimedActionQueue.add(updateAction)
-                            end
 
-                            droppedToContainer = true
-                            actionsQueued = actionsQueued + 1
-                            break
+                                droppedToContainer = true
+                                actionsQueued = actionsQueued + 1
+                                break
+                            end
                         end
                     end
 
                     if not droppedToContainer then
                         if scheduledSquare ~= self.dropSquare then
-                            if luautils.walkAdj(self.character, self.dropSquare, false) then
-                                scheduledSquare = self.dropSquare
+                            -- can't path to the selected square: check the floor
+                            -- transfer anyway would dump shit wherever the player is standing
+                            if not luautils.walkAdj(self.character, self.dropSquare, true) then
+                                self.dropOffBlocked = true
+                                self.droppingItems = false
+                                return
                             end
+                            scheduledSquare = self.dropSquare
                         end
 
                         ISTimedActionQueue.add(ISInventoryTransferAction:new(
@@ -427,6 +441,9 @@ function WO_GatherItemsAction:End()
         ISTimedActionQueue.clear(self.character)
         Events.OnTick.Remove(self.OnTick)
     end
+    if self.dropOffBlocked then
+        self.character:setHaloNote(getText("UI_WorkOrders_CantReachDropOff"), 255, 100, 80, 300)
+    end
 end
 
 -- the whole job runs off this tick
@@ -438,6 +455,10 @@ function WO_GatherItemsAction:Update()
         Events.OnTick.Remove(self.OnTick)
 
         if not self.character or not self.character:getSquare() then return end
+        if self.dropOffBlocked then
+            self:End()
+            return
+        end
         if WorkOrders.isTooDark(self.character) then
             self:End()
             self.character:setHaloNote(getText("UI_WorkOrders_TooDark"), 255, 80, 80, 300)
