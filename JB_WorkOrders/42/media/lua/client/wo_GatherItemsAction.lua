@@ -3,9 +3,10 @@ local ItemList = require("registries/wo_ItemList")
 local StorageLogic = require("logic/wo_StorageLogic")
 local SquareUtils = require("helpers/wo_SquareUtils")
 
-local ACTION_DELAY_MS = 85
-local DOTS_START_MS   = 170
-local DOTS_CYCLE_MS   = 500
+local ACTION_DELAY_MS  = 85
+local DOTS_START_MS    = 170
+local DOTS_CYCLE_MS    = 500
+local DROP_STALL_LIMIT = 3 -- attempted drops where nothing transfered
 
 WO_GatherItemsAction = {}
 WO_GatherItemsAction.__index = WO_GatherItemsAction
@@ -313,10 +314,30 @@ function WO_GatherItemsAction:DropOffItems()
         return
     end
 
+    local carried = 0
+    for _, playerContainer in ipairs(playerContainers) do
+        for itemType in pairs(self.itemTypes) do
+            local carriedItems = playerContainer:getItemsFromFullType(itemType)
+            if carriedItems then carried = carried + carriedItems:size() end
+        end
+    end
+
+    if carried > 0 and self.lastCarried and carried >= self.lastCarried then
+        self.dropStalls = (self.dropStalls or 0) + 1
+        if self.dropStalls >= DROP_STALL_LIMIT then
+            self.dropOffFull = true
+            self.droppingItems = false
+            return
+        end
+    else
+        self.dropStalls = 0
+    end
+    self.lastCarried = carried
+
     local actionsQueued = 0
     local BATCH_LIMIT = 20
     local scheduledSquare = self.character:getSquare()
-    local unreachable = {} -- cant path to these this batch, quit probing them for every damn item
+    local unreachable = {} -- cant path to these this batch, quit checking every item
 
     local projectedWeights = {}
     for _, destination in ipairs(destinations) do
@@ -417,6 +438,8 @@ function WO_GatherItemsAction:DropOffItems()
 
     if actionsQueued == 0 then
         self.droppingItems = false
+        self.lastCarried = nil
+        self.dropStalls = nil
         ISInventoryPage.renderDirty = true
     end
 end
@@ -443,6 +466,8 @@ function WO_GatherItemsAction:End()
     end
     if self.dropOffBlocked then
         self.character:setHaloNote(getText("UI_WorkOrders_CantReachDropOff"), 255, 100, 80, 300)
+    elseif self.dropOffFull then
+        self.character:setHaloNote(getText("UI_WorkOrders_DropOffFull"), 255, 100, 80, 300)
     end
 end
 
@@ -455,7 +480,7 @@ function WO_GatherItemsAction:Update()
         Events.OnTick.Remove(self.OnTick)
 
         if not self.character or not self.character:getSquare() then return end
-        if self.dropOffBlocked then
+        if self.dropOffBlocked or self.dropOffFull then
             self:End()
             return
         end
