@@ -2,6 +2,10 @@ local Options = require("helpers/wo_Options")
 
 WorkOrders = WorkOrders or {}
 
+local SIT_POKE_MS     = 1500 -- give the sit anim this long to take before we poke it again
+local SIT_GIVEUP_MS   = 6000 -- cant get our ass on the ground at all? quit resting, back to work
+local GETUP_GIVEUP_MS = 3000 -- forceGetUp got eaten somewhere, bail before the queue wedges
+
 function WorkOrders.getEnduranceReduction()
     local pct
     if isClient() or isServer() then
@@ -15,6 +19,9 @@ function WorkOrders.getEnduranceReduction()
 end
 
 function WorkOrders.giveBackEndurance(playerObj, lastEndurance)
+    -- in MP the server owns endurance, so the refund runs over there out of wo_StaminaSync.
+    -- setting it here would just get synced away a second later
+    if isClient() then return nil end
     local reduction = WorkOrders.getEnduranceReduction()
     if reduction <= 0 then return nil end
     local stats = playerObj:getStats()
@@ -38,7 +45,12 @@ function WorkOrders.getRestLevel()
     return level
 end
 
-function WorkOrders.shouldStartRest(playerObj)
+---@param playerObj IsoPlayer
+---@param state table|nil the queue or job table carrying the rest fields
+---@return boolean
+function WorkOrders.shouldStartRest(playerObj, state)
+    -- a job that already proved it cant sit stays blocked, else we loop giveup -> retry forever
+    if state and state.restBlocked then return false end
     local level = WorkOrders.getRestLevel()
     if level <= 0 then return false end
     local moodles = playerObj:getMoodles()
@@ -57,34 +69,75 @@ function WorkOrders.getUpFromRest(playerObj)
     end
 end
 
-function WorkOrders.updateRest(playerObj, state)
+---wipes every rest field and the halo so a half finished rest cant leak into the next job
+---@param playerObj IsoPlayer
+---@param state table the queue or job table carrying the rest fields
+function WorkOrders.clearRest(playerObj, state)
+    state.resting = nil
+    state.restPhase = nil
+    state.restNoSitMs = nil
+    state.restPokeMs = nil
+    state.restGetUpMs = nil
+    state.restBlocked = nil
+    playerObj:setHaloNote("", 0)
+end
+
+---@param playerObj IsoPlayer
+---@param state table the queue or job table carrying the rest fields
+---@param dt number ms since the last tick, already clamped by the caller
+---@return boolean stillResting true means the caller bails out of this tick
+function WorkOrders.updateRest(playerObj, state, dt)
     if not state.resting then return false end
 
     if state.restPhase == "gettingup" then
         if not playerObj:isSitOnGround() then
-            state.resting = false
-            state.restPhase = nil
+            WorkOrders.clearRest(playerObj, state)
+            return false
+        end
+        state.restGetUpMs = (state.restGetUpMs or 0) + dt
+        if state.restGetUpMs >= GETUP_GIVEUP_MS then
+            -- one more shove, then stop holding the whole queue hostage over it
+            WorkOrders.getUpFromRest(playerObj)
+            WorkOrders.clearRest(playerObj, state)
+            state.restBlocked = true
             return false
         end
         return true
     end
 
-    if WorkOrders.isEnduranceRestored(playerObj) then
+    -- endurance is back, or the player dragged the rest slider to 0 while we sat here
+    if WorkOrders.isEnduranceRestored(playerObj) or WorkOrders.getRestLevel() <= 0 then
         if playerObj:isSitOnGround() then
             WorkOrders.getUpFromRest(playerObj)
             state.restPhase = "gettingup"
+            state.restGetUpMs = 0
             return true
         end
-        state.resting = false
-        state.restPhase = nil
+        WorkOrders.clearRest(playerObj, state)
         return false
     end
 
-    if state.restPhase ~= "sitting" then
-        playerObj:setAutoWalk(false)
-        playerObj:reportEvent("EventSitOnGround")
-        state.restPhase = "sitting"
+    if playerObj:isSitOnGround() then
+        state.restNoSitMs = 0
+        state.restPokeMs = 0
+    else
+        -- zombie knocked us up, shitty tile, whatever. standing around regens endurance at a
+        -- crawl, so poke the sit a few times and then admit defeat instead of faking a rest
+        state.restNoSitMs = (state.restNoSitMs or 0) + dt
+        if state.restNoSitMs >= SIT_GIVEUP_MS then
+            WorkOrders.clearRest(playerObj, state)
+            state.restBlocked = true
+            return false
+        end
+        state.restPokeMs = (state.restPokeMs or 0) + dt
+        if state.restPhase ~= "sitting" or state.restPokeMs >= SIT_POKE_MS then
+            playerObj:setAutoWalk(false)
+            playerObj:reportEvent("EventSitOnGround")
+            state.restPhase = "sitting"
+            state.restPokeMs = 0
+        end
     end
+
     playerObj:setHaloNote(getText("UI_WorkOrders_Resting"), 120, 200, 120, 100)
     return true
 end

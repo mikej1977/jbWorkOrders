@@ -409,6 +409,7 @@ end
 
 function WO_GatherItemsAction:Start()
     self.stopRequested = false
+    WorkOrders.setWorking(self.character, true)
     local actionSpeedKeeper = ActionSpeedKeeper:new(self.character)
     actionSpeedKeeper:AddStopCondition(function()
         return self.stopRequested
@@ -419,8 +420,9 @@ end
 
 function WO_GatherItemsAction:End()
     self.stopRequested = true
+    WorkOrders.setWorking(self.character, false)
     if self.resting then WorkOrders.getUpFromRest(self.character) end
-    self.character:setHaloNote("", 0)
+    WorkOrders.clearRest(self.character, self) -- also wipes the halo note
     if self.OnTick then
         ISTimedActionQueue.clear(self.character)
         Events.OnTick.Remove(self.OnTick)
@@ -465,11 +467,11 @@ function WO_GatherItemsAction:Update()
         end
 
         if self.resting then
-            if WorkOrders.updateRest(self.character, self) then
+            if WorkOrders.updateRest(self.character, self, dt) then
                 Events.OnTick.Add(self.OnTick)
                 return
             end
-        elseif WorkOrders.shouldStartRest(self.character) then
+        elseif WorkOrders.shouldStartRest(self.character, self) then
             self.resting = true
             self.restPhase = nil
             Events.OnTick.Add(self.OnTick)

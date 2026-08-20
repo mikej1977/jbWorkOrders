@@ -112,6 +112,7 @@ function ActionPlayer.start(playerObj)
     if not queue then return end
 
     queue.isActive = true
+    WorkOrders.setWorking(playerObj, true)
 
     if not queue.speedKeeper then
         queue.speedKeeper = ActionSpeedKeeper:new(playerObj)
@@ -140,7 +141,7 @@ function ActionPlayer.start(playerObj)
         end
 
         if queue.resting then
-            if WorkOrders.updateRest(playerObj, queue) then
+            if WorkOrders.updateRest(playerObj, queue, dt) then
                 return
             end
         end
@@ -165,7 +166,7 @@ function ActionPlayer.start(playerObj)
             return
         end
 
-        if #queue.tasks > 0 and not queue.noRest and WorkOrders.shouldStartRest(playerObj) then
+        if #queue.tasks > 0 and not queue.noRest and WorkOrders.shouldStartRest(playerObj, queue) then
             queue.resting = true
             queue.restPhase = nil
             return
@@ -207,6 +208,7 @@ function ActionPlayer.clear(playerObj)
     local queue = queues[playerNum]
 
     if queue then
+        if queue.isActive then WorkOrders.setWorking(playerObj, false) end
         if queue.resting then WorkOrders.getUpFromRest(playerObj) end
         ClaimedSquares.releaseAll(playerNum)
         overlayByPlayer[playerNum] = nil
@@ -214,8 +216,7 @@ function ActionPlayer.clear(playerObj)
         queue.queuedKeys = {} -- fresh orders
         queue.worksInDark = nil
         queue.noRest = nil
-        queue.resting = nil
-        queue.restPhase = nil
+        WorkOrders.clearRest(playerObj, queue)
         queue.lastEndurance = nil
 
         local finish = queue.onFinish
