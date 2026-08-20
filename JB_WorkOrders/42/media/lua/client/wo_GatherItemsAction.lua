@@ -350,13 +350,15 @@ function WO_GatherItemsAction:DropOffItems()
                             local containerObj = actualContainer:getParent()
                             local destSquare = containerObj and containerObj:getSquare() or self.dropSquare
 
-                            self.dropSquare = destSquare
-
                             if scheduledSquare ~= destSquare then
                                 if targetVehiclePart then
                                     if not walkToVehiclePartArea(self.character, targetVehiclePart) then return end
                                 else
-                                    if not luautils.walkAdj(self.character, self.dropSquare, false) then return end
+                                    if not luautils.walkAdj(self.character, destSquare, false) then
+                                        self.dropOffBlocked = true
+                                        self.droppingItems = false
+                                        return
+                                    end
                                 end
                                 scheduledSquare = destSquare
                             end
