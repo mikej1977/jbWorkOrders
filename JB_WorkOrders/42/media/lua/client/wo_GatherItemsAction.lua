@@ -385,9 +385,12 @@ function WO_GatherItemsAction:DropOffItems()
 
                     if not droppedToContainer then
                         if scheduledSquare ~= self.dropSquare then
-                            if luautils.walkAdj(self.character, self.dropSquare, false) then
-                                scheduledSquare = self.dropSquare
+                            if not luautils.walkAdj(self.character, self.dropSquare, false) then
+                                self.dropOffBlocked = true
+                                self.droppingItems = false
+                                return
                             end
+                            scheduledSquare = self.dropSquare
                         end
 
                         ISTimedActionQueue.add(ISInventoryTransferAction:new(
@@ -427,6 +430,9 @@ function WO_GatherItemsAction:End()
         ISTimedActionQueue.clear(self.character)
         Events.OnTick.Remove(self.OnTick)
     end
+    if self.dropOffBlocked then
+        self.character:setHaloNote(getText("UI_WorkOrders_CantReachDropOff"), 255, 100, 80, 300)
+    end
 end
 
 -- the whole job runs off this tick
@@ -438,6 +444,10 @@ function WO_GatherItemsAction:Update()
         Events.OnTick.Remove(self.OnTick)
 
         if not self.character or not self.character:getSquare() then return end
+        if self.dropOffBlocked then
+            self:End()
+            return
+        end
         if WorkOrders.isTooDark(self.character) then
             self:End()
             self.character:setHaloNote(getText("UI_WorkOrders_TooDark"), 255, 80, 80, 300)

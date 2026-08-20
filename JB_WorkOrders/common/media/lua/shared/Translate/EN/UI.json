@@ -25,6 +25,7 @@
     "UI_WorkOrders_Menu_Req_Chop_Firewood": "Axe",
     "UI_WorkOrders_TooDark": "Too dark to work",
     "UI_WorkOrders_Resting": "Resting...",
+    "UI_WorkOrders_CantReachDropOff": "Can't reach the drop-off spot",
     "UI_WorkOrders_Menu_Tooltip_Gather_Logs": "Automatically gather logs in the selected area and moves them to your designated storage area/container.",
     "UI_WorkOrders_Menu_Tooltip_Gather_Planks": "Searches the area for planks to gather and moves them to your designated storage area/container..",
     "UI_WorkOrders_Menu_Tooltip_Gather_Firewood": "Collect all cut firewood from the ground and moves them to your designated storage area/container.",
